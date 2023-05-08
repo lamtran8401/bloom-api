@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  db-dev:
+    image: postgres:12
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: 123
+      POSTGRES_USER: bloom
+      POSTGRES_DB: bloom
+    volumes:
+      - db_dev_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_dev_data:
