@@ -1,5 +1,8 @@
 package com.bloom.api.services;
 
+import com.bloom.api.dto.MappedDTO;
+import com.bloom.api.dto.user.UserDTO;
+import com.bloom.api.exception.NotFoundException;
 import com.bloom.api.models.User;
 import com.bloom.api.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,16 +14,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final MappedDTO mappedDTO;
 
-    public List<User> getAllUser() {
-        return userRepository.findAll();
+    public List<UserDTO> getAllUser() {
+        return mappedDTO.mapUsersDTO(userRepository.findAll());
     }
 
     public User save(User user) {
         return userRepository.save(user);
     }
 
-    public User getUserById(Integer id) {
-        return userRepository.findById(id).orElse(null);
+    public UserDTO getUserById(Integer id) {
+        return mappedDTO
+            .mapUserDTO(userRepository
+                .findById(id)
+                .orElseThrow(() -> new NotFoundException("User not found.")));
     }
 }

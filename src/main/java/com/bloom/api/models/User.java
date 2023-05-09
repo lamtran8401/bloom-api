@@ -1,12 +1,15 @@
 package com.bloom.api.models;
 
+import com.bloom.api.enums.Gender;
 import com.bloom.api.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,14 +25,20 @@ public class User extends Base implements UserDetails {
     @Column(unique = true)
     private String email;
     private String password;
+    private String phone;
+    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    private LocalDate birthDate;
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
-//    @PrePersist
-//    void preInsert() {
-//        if (this.role == null)
-//            this.role = Role.USER;
-//    }
+    @PrePersist
+    void preInsert() {
+        if (this.role == null)
+            this.role = Role.USER;
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
