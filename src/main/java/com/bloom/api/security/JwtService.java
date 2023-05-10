@@ -1,4 +1,4 @@
-package com.bloom.api.config;
+package com.bloom.api.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -6,6 +6,7 @@ import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,10 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtService {
 
-    private final String SECRET_KEY = "supersecretjwtkeysupersecretjwtkeysupersecretjwtkeysupersecretjwtkey";
+    @Value("${jwt.secret-key}")
+    private String SECRET_KEY;
+    @Value("${jwt.expiration-time}")
+    private int EXPIRATION_TIME;
 
     public String extractEmail(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -43,7 +47,7 @@ public class JwtService {
             .setClaims(extraClaims)
             .setSubject(userDetails.getUsername())
             .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
             .signWith(getSigningKey(), SignatureAlgorithm.HS256)
             .compact();
     }

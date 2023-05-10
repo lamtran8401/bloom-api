@@ -24,7 +24,7 @@ public class UserService {
         return userRepository.save(user);
     }
 
-    public UserDTO getUserById(Integer id) {
+    public UserDTO getUserById(Integer id) throws NotFoundException {
         return mappedDTO
             .mapUserDTO(userRepository
                 .findById(id)

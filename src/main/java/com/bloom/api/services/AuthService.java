@@ -1,10 +1,10 @@
 package com.bloom.api.services;
 
-import com.bloom.api.config.JwtService;
 import com.bloom.api.exception.NotFoundException;
 import com.bloom.api.exception.UserExistException;
 import com.bloom.api.models.User;
 import com.bloom.api.repositories.UserRepository;
+import com.bloom.api.security.JwtService;
 import com.bloom.api.utils.AuthenticationRequest;
 import com.bloom.api.utils.AuthenticationResponse;
 import com.bloom.api.utils.RegistrationRequest;
@@ -54,9 +54,5 @@ public class AuthService {
         return AuthenticationResponse.builder()
             .token(jwtToken)
             .build();
-    }
-
-    public void logout() {
-
     }
 }
