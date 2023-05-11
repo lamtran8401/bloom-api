@@ -1,6 +1,5 @@
 package com.bloom.api.config;
 
-import com.bloom.api.dto.user.UserDTOMapper;
 import com.bloom.api.exception.CustomExceptionHandler;
 import com.bloom.api.exception.UnauthorizedException;
 import com.bloom.api.repositories.UserRepository;
@@ -45,10 +44,5 @@ public class ApplicationConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public UserDTOMapper userDTOMapper() {
-        return new UserDTOMapper();
     }
 }

@@ -2,9 +2,11 @@ package com.bloom.api.dto.user;
 
 import com.bloom.api.models.User;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.stereotype.Component;
 
 import java.util.function.Function;
 
+@Component
 public class UserDTOMapper implements Function<User, UserDTO> {
 
     @Override

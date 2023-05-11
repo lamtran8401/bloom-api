@@ -2,6 +2,8 @@ package com.bloom.api.models;
 
 import com.bloom.api.enums.Gender;
 import com.bloom.api.enums.Role;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -26,7 +28,9 @@ public class User extends Base implements UserDetails {
     private String email;
     private String password;
     private String phone;
+    @JsonDeserialize()
     @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
     private LocalDate birthDate;
     @Enumerated(EnumType.STRING)
     private Gender gender;
