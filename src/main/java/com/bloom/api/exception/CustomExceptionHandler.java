@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(RecordNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundException(NotFoundException e) {
+    public ErrorResponse handleNotFoundException(RecordNotFoundException e) {
         return new ErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 

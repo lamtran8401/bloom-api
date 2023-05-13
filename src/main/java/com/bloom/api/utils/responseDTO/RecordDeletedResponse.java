@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeleteAddressResponse {
+public class RecordDeletedResponse {
     private String message;
     private int statusCode;
 }

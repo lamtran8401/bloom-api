@@ -16,4 +16,4 @@ server:
   port: 8080
 jwt:
   secret-key: "supersecretjwtkeysupersecretjwtkeysupersecretjwtkeysupersecretjwtkey"
-  expiration-time: 60000
+  expiration-time: 900000

@@ -14,15 +14,13 @@ import org.hibernate.annotations.DynamicUpdate;
 @Getter
 @Setter
 @Builder
-public class Address extends Base {
-    private int city;
-    private int district;
-    private int ward;
-    private String detail;
-    private Boolean isDefault = false;
+public class ProductDetail extends Base {
+    private String color;
+    private String size;
+    private int stock;
+    private Double price;
     @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
-
+    @JoinColumn(name = "product_id")
+    private Product product;
 }

@@ -1,7 +1,7 @@
 package com.bloom.api.services;
 
 import com.bloom.api.dto.MappedDTO;
-import com.bloom.api.exception.NotFoundException;
+import com.bloom.api.exception.RecordNotFoundException;
 import com.bloom.api.exception.UserExistedException;
 import com.bloom.api.models.User;
 import com.bloom.api.repositories.UserRepository;
@@ -50,7 +50,7 @@ public class AuthService {
         );
 
         var user = userRepository.findByEmail(req.getEmail())
-            .orElseThrow(() -> new NotFoundException("User not found with email: " + req.getEmail() + "."));
+            .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + req.getEmail() + "."));
 
         var jwtToken = jwtService.generateToken(user);
 

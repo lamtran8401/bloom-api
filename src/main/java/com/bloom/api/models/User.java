@@ -39,10 +39,7 @@ public class User extends Base implements UserDetails {
     private Gender gender;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToMany(mappedBy = "user",
-        cascade = CascadeType.ALL,
-        orphanRemoval = true)
-    @Getter(AccessLevel.NONE)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Address> addresses = new ArrayList<>();
 
     @PrePersist
@@ -88,9 +85,5 @@ public class User extends Base implements UserDetails {
 
     public void addAddress(Address address) {
         this.addresses.add(address);
-    }
-
-    public void removeAddress(Address address) {
-        this.addresses.remove(address);
     }
 }
