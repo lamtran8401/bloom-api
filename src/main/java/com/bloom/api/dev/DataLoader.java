@@ -27,8 +27,15 @@ public class DataLoader implements CommandLineRunner {
                 .email("admin@gmail.com")
                 .password(passwordEncoder.encode("123456"))
                 .role(Role.ADMIN)
+                .build(),
+            User.builder()
+                .name("Lam Tran")
+                .email("lamlol01@gmail.com")
+                .password(passwordEncoder.encode("123456"))
+                .role(Role.USER)
                 .build()
         );
+
 
         users.forEach(userService::save);
         logger.info("Loaded users.");

@@ -6,17 +6,20 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
 @Entity
 @Table(name = "users")
+@DynamicUpdate
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -34,9 +37,13 @@ public class User extends Base implements UserDetails {
     private LocalDate birthDate;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-
     @Enumerated(EnumType.STRING)
     private Role role;
+    @OneToMany(mappedBy = "user",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true)
+    @Getter(AccessLevel.NONE)
+    private List<Address> addresses = new ArrayList<>();
 
     @PrePersist
     void preInsert() {
@@ -77,5 +84,13 @@ public class User extends Base implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void addAddress(Address address) {
+        this.addresses.add(address);
+    }
+
+    public void removeAddress(Address address) {
+        this.addresses.remove(address);
     }
 }

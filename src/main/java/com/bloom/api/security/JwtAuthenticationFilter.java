@@ -1,6 +1,8 @@
 package com.bloom.api.security;
 
 import com.bloom.api.exception.UnauthorizedException;
+import com.bloom.api.models.User;
+import com.bloom.api.utils.AuthContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.UnsupportedJwtException;
@@ -16,7 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -53,18 +54,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             logger.warn(e.getMessage());
             handleJwtException(res, e.getMessage(), HttpStatus.BAD_REQUEST);
             return;
-        } catch (UnsupportedJwtException e) {
-            logger.warn(e.getMessage());
-            handleJwtException(res, e.getMessage(), HttpStatus.UNAUTHORIZED);
-            return;
-        } catch (SignatureException e) {
+        } catch (UnsupportedJwtException | SignatureException e) {
             logger.warn(e.getMessage());
             handleJwtException(res, e.getMessage(), HttpStatus.UNAUTHORIZED);
             return;
         }
 
-        if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = loadUserByEmail(email);
+        if (email != null && AuthContext.getAuth() == null) {
+            User userDetails = loadUserByEmail(email);
 
             if (userDetails == null) {
                 handleJwtException(res, "User not found with this token.", HttpStatus.UNAUTHORIZED);
@@ -82,9 +79,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         filterChain.doFilter(req, res);
     }
 
-    private UserDetails loadUserByEmail(String email) {
+    private User loadUserByEmail(String email) {
         try {
-            return userDetailsService.loadUserByUsername(email);
+            return (User) userDetailsService.loadUserByUsername(email);
         } catch (UnauthorizedException e) {
             logger.warn(e.getMessage(), email);
             return null;
