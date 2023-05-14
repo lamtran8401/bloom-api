@@ -13,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class Product extends Base {
+public class Product extends BaseModel {
     private String name;
     private String description;
     @ElementCollection
@@ -21,6 +21,7 @@ public class Product extends Base {
     private Double price;
     private String category;
     private String brand;
+    private boolean isVisible = true;
     @OneToMany(mappedBy = "product",
         orphanRemoval = true,
         cascade = CascadeType.ALL,
@@ -28,5 +29,14 @@ public class Product extends Base {
     private List<ProductDetail> productDetails;
     @ManyToOne(fetch = FetchType.LAZY)
     private Sale sale;
+
+    public void setProductInfo(Product product) {
+        this.name = product.getName();
+        this.description = product.getDescription();
+        this.images = product.getImages();
+        this.price = product.getPrice();
+        this.category = product.getCategory();
+        this.brand = product.getBrand();
+    }
 
 }

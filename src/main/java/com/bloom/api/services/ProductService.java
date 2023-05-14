@@ -43,14 +43,8 @@ public class ProductService {
     public Product updateById(Integer productId, Product product) {
         Product productToUpdate = productRepository.findById(productId).orElseThrow(()
             -> new RecordNotFoundException("Product not found with id: " + productId));
-        if (product.getName() != null) productToUpdate.setName(product.getName());
-        if (product.getDescription() != null)
-            productToUpdate.setDescription(product.getDescription());
-        if (product.getPrice() != null) productToUpdate.setPrice(product.getPrice());
-        if (product.getCategory() != null) productToUpdate.setCategory(product.getCategory());
-        if (product.getBrand() != null) productToUpdate.setBrand(product.getBrand());
-        if (product.getImages() != null) productToUpdate.setImages(product.getImages());
-        
+        productToUpdate.setProductInfo(product);
+
         return productRepository.save(productToUpdate);
     }
 }

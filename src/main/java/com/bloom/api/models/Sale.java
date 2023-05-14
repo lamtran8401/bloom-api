@@ -16,7 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
-public class Sale extends Base {
+public class Sale extends BaseModel {
     private double discount;
     private LocalDateTime startDate;
     private LocalDateTime endDate;

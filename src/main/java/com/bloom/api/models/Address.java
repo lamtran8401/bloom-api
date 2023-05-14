@@ -2,7 +2,6 @@ package com.bloom.api.models;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
@@ -14,15 +13,21 @@ import org.hibernate.annotations.DynamicUpdate;
 @Getter
 @Setter
 @Builder
-public class Address extends Base {
-    private int city;
-    private int district;
-    private int ward;
+public class Address extends BaseModel {
+    private Integer city;
+    private Integer district;
+    private Integer ward;
     private String detail;
-    private Boolean isDefault = false;
+    private boolean isDefault = false;
     @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
     private User user;
 
+    public void setAddress(Address address) {
+        this.city = address.getCity();
+        this.district = address.getDistrict();
+        this.ward = address.getWard();
+        this.detail = address.getDetail();
+        this.isDefault = address.isDefault();
+    }
 }

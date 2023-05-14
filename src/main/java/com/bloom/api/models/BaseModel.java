@@ -13,7 +13,7 @@ import java.time.Instant;
 @MappedSuperclass
 @Getter
 @Setter
-public class Base {
+public class BaseModel {
     @Id
     @GeneratedValue(generator = "increment")
     private Integer id;

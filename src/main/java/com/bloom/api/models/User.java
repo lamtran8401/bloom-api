@@ -25,7 +25,7 @@ import java.util.List;
 @Getter
 @Setter
 @Builder
-public class User extends Base implements UserDetails {
+public class User extends BaseModel implements UserDetails {
     private String name;
     @Column(unique = true)
     private String email;

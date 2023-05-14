@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/users/address")
+@RequestMapping("/api/v1/addresses")
 @RequiredArgsConstructor
 public class AddressController {
     private final AddressService addressService;
@@ -25,6 +25,11 @@ public class AddressController {
     public ResponseEntity<Address> addAddress(@RequestBody Address address) {
         var userId = AuthContext.getUserId();
         return ResponseEntity.ok(addressService.addAddress(userId, address));
+    }
+
+    @PutMapping("/{addressId}")
+    public ResponseEntity<Address> updateAddress(@PathVariable Integer addressId, @RequestBody Address address) {
+        return ResponseEntity.ok(addressService.updateAddress(addressId, address, AuthContext.getUserId()));
     }
 
     @DeleteMapping("/{addressId}")

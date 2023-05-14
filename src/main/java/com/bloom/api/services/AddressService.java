@@ -23,6 +23,10 @@ public class AddressService {
         var user = userRepository
             .findById(userId)
             .orElseThrow(() -> new RecordNotFoundException("User not found with id: " + userId + "."));
+
+        if (address.isDefault())
+            addressRepository.updateAllDefaultAddressByUserId(userId);
+
         user.addAddress(address);
         address.setUser(user);
         return address;
@@ -41,6 +45,23 @@ public class AddressService {
     }
 
     public List<Address> getAllAddress(Integer userId) throws RecordNotFoundException {
-        return userRepository.findAllAddressByUserId(userId);
+        return addressRepository.findAddressesByUserId(userId);
+    }
+
+    @Transactional
+    public Address updateAddress(Integer addressId, Address address, Integer userId) {
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new RecordNotFoundException("User not found with id: " + userId + "."));
+
+        Address addressToUpdate = addressRepository
+            .findByIdAndUserId(addressId, userId);
+
+        if (address.isDefault())
+            addressRepository.updateAllDefaultAddressByUserId(userId);
+
+        addressToUpdate.setAddress(address);
+
+        return addressToUpdate;
     }
 }
