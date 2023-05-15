@@ -1,4 +1,4 @@
-package com.bloom.api.utils.responseDTO;
+package com.bloom.api.utils.dto.response;
 
 import com.bloom.api.dto.user.UserDTO;
 import lombok.AllArgsConstructor;

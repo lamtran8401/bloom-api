@@ -3,7 +3,8 @@ package com.bloom.api.controllers;
 import com.bloom.api.models.Address;
 import com.bloom.api.services.AddressService;
 import com.bloom.api.utils.AuthContext;
-import com.bloom.api.utils.responseDTO.RecordDeletedResponse;
+import com.bloom.api.utils.dto.response.ResponseHandler;
+import com.bloom.api.utils.dto.response.ResponseSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,7 +34,10 @@ public class AddressController {
     }
 
     @DeleteMapping("/{addressId}")
-    public ResponseEntity<RecordDeletedResponse> deleteAddress(@PathVariable Integer addressId) {
-        return ResponseEntity.ok(addressService.deleteAddress(addressId));
+    public ResponseEntity<ResponseSender> deleteAddress(@PathVariable Integer addressId) {
+        addressService.deleteAddress(addressId);
+        return ResponseEntity.ok(
+                ResponseHandler.ok("Address deleted successfully")
+        );
     }
 }

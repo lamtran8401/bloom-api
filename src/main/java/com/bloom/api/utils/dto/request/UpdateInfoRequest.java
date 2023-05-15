@@ -1,7 +1,7 @@
-package com.bloom.api.utils.requestDTO;
+package com.bloom.api.utils.dto.request;
 
 import com.bloom.api.enums.Gender;
-import com.bloom.api.utils.converter.LocalDateDeserializer;
+import com.bloom.api.utils.LocalDateDeserializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;

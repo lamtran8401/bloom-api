@@ -5,6 +5,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice
 public class CustomExceptionHandler {
@@ -14,9 +15,9 @@ public class CustomExceptionHandler {
         return new ErrorResponse(HttpStatus.NOT_FOUND, e.getMessage());
     }
 
-    @ExceptionHandler(UserExistedException.class)
+    @ExceptionHandler(RecordExistedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUserExistException(UserExistedException e) {
+    public ErrorResponse handleUserExistException(RecordExistedException e) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
@@ -30,5 +31,11 @@ public class CustomExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleJsonParseException(HttpMessageNotReadableException e) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMissingServletRequestPartException(MissingServletRequestPartException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage() + " Missing image file to create resource.");
     }
 }

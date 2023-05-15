@@ -1,9 +1,9 @@
 package com.bloom.api.controllers;
 
 import com.bloom.api.services.AuthService;
-import com.bloom.api.utils.requestDTO.AuthenticationRequest;
-import com.bloom.api.utils.requestDTO.RegistrationRequest;
-import com.bloom.api.utils.responseDTO.AuthenticationResponse;
+import com.bloom.api.utils.dto.request.AuthenticationRequest;
+import com.bloom.api.utils.dto.request.RegistrationRequest;
+import com.bloom.api.utils.dto.response.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;

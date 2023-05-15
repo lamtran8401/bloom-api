@@ -2,7 +2,7 @@ package com.bloom.api.controllers;
 
 import com.bloom.api.dto.user.UserDTO;
 import com.bloom.api.services.UserService;
-import com.bloom.api.utils.requestDTO.UpdateInfoRequest;
+import com.bloom.api.utils.dto.request.UpdateInfoRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

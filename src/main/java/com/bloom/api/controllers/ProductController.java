@@ -2,11 +2,14 @@ package com.bloom.api.controllers;
 
 import com.bloom.api.models.Product;
 import com.bloom.api.services.ProductService;
-import com.bloom.api.utils.responseDTO.RecordDeletedResponse;
+import com.bloom.api.utils.dto.response.ResponseHandler;
+import com.bloom.api.utils.dto.response.ResponseSender;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,9 +25,9 @@ public class ProductController {
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
-    @PostMapping
-    public ResponseEntity<Product> createProduct(@RequestBody Product product) {
-        return ResponseEntity.ok(productService.create(product));
+    @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Product> createProduct(@RequestPart MultipartFile[] files, @ModelAttribute Product product) {
+        return ResponseEntity.ok(productService.create(product, files));
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -40,7 +43,26 @@ public class ProductController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{productId}")
-    public ResponseEntity<RecordDeletedResponse> deleteProductById(@PathVariable Integer productId) {
-        return ResponseEntity.ok(productService.deleteById(productId));
+    public ResponseEntity<ResponseSender> deleteProductById(@PathVariable Integer productId) {
+        productService.deleteById(productId);
+        return ResponseEntity.ok(
+                ResponseHandler.ok("Product deleted successfully"));
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/hide/{productId}")
+    public ResponseEntity<ResponseSender> hideProductById(@PathVariable Integer productId) {
+        productService.hideById(productId);
+        return ResponseEntity.ok(
+                ResponseHandler.ok("Product hidden successfully"));
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/show/{productId}")
+    public ResponseEntity<ResponseSender> showProductById(@PathVariable Integer productId) {
+        productService.showById(productId);
+        return ResponseEntity.ok(
+                ResponseHandler.ok("Product shown successfully"));
+    }
+
 }

@@ -1,4 +1,4 @@
-package com.bloom.api.utils.requestDTO;
+package com.bloom.api.utils.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthenticationRequest {
+public class RegistrationRequest {
+    private String name;
     private String email;
     private String password;
 }

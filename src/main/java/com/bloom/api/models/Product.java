@@ -14,10 +14,12 @@ import java.util.List;
 @Setter
 @Builder
 public class Product extends BaseModel {
+    @Column(nullable = false)
     private String name;
     private String description;
     @ElementCollection
     private List<String> images;
+    @Column(nullable = false)
     private Double price;
     private String category;
     private String brand;

@@ -1,14 +1,14 @@
 package com.bloom.api.services;
 
 import com.bloom.api.dto.MappedDTO;
+import com.bloom.api.exception.RecordExistedException;
 import com.bloom.api.exception.RecordNotFoundException;
-import com.bloom.api.exception.UserExistedException;
 import com.bloom.api.models.User;
 import com.bloom.api.repositories.UserRepository;
 import com.bloom.api.security.JwtService;
-import com.bloom.api.utils.requestDTO.AuthenticationRequest;
-import com.bloom.api.utils.requestDTO.RegistrationRequest;
-import com.bloom.api.utils.responseDTO.AuthenticationResponse;
+import com.bloom.api.utils.dto.request.AuthenticationRequest;
+import com.bloom.api.utils.dto.request.RegistrationRequest;
+import com.bloom.api.utils.dto.response.AuthenticationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -27,36 +27,36 @@ public class AuthService {
     public AuthenticationResponse register(RegistrationRequest req) {
         var userExists = userRepository.existsByEmail(req.getEmail());
         if (userExists)
-            throw new UserExistedException("User already existed with email: " + req.getEmail() + ".");
+            throw new RecordExistedException("User already existed with email: " + req.getEmail() + ".");
 
         var user = User.builder()
-            .name(req.getName())
-            .email(req.getEmail())
-            .password(passwordEncoder.encode(req.getPassword()))
-            .build();
+                .name(req.getName())
+                .email(req.getEmail())
+                .password(passwordEncoder.encode(req.getPassword()))
+                .build();
         userRepository.save(user);
 
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
-            .token(jwtToken)
-            .user(mappedDTO.mapUserDTO(user))
-            .build();
+                .token(jwtToken)
+                .user(mappedDTO.mapUserDTO(user))
+                .build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest req) {
         authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
+                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
         );
 
         var user = userRepository.findByEmail(req.getEmail())
-            .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + req.getEmail() + "."));
+                .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + req.getEmail() + "."));
 
         var jwtToken = jwtService.generateToken(user);
 
         return AuthenticationResponse.builder()
-            .token(jwtToken)
-            .user(mappedDTO.mapUserDTO(user))
-            .build();
+                .token(jwtToken)
+                .user(mappedDTO.mapUserDTO(user))
+                .build();
     }
 }

@@ -3,10 +3,10 @@ package com.bloom.api.services;
 import com.bloom.api.exception.RecordNotFoundException;
 import com.bloom.api.models.Product;
 import com.bloom.api.repositories.ProductRepository;
-import com.bloom.api.utils.responseDTO.RecordDeletedResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -14,37 +14,46 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
+    private final UploaderService uploaderService;
 
     public List<Product> getAll() {
-        return productRepository.findAll();
+        return productRepository.findByIsVisibleTrue();
     }
 
-    public Product create(Product product) {
-        return productRepository.save(product);
-    }
+    @Transactional
+    public Product create(Product p, MultipartFile[] files) {
+        Product product = productRepository.save(p);
+        List<String> urls = uploaderService.uploadImages(files, "p" + product.getId());
+        product.setImages(urls);
 
-    public Product getById(Integer id) {
-        Product product = productRepository.findById(id).orElseThrow(()
-            -> new RecordNotFoundException("Product not found with id: " + id));
-        product.getProductDetails();
         return product;
     }
 
-    public RecordDeletedResponse deleteById(Integer id) {
+    public Product getById(Integer id) {
+        return productRepository.findById(id).orElseThrow(()
+                -> new RecordNotFoundException("Product not found with id: " + id));
+    }
+
+    public void deleteById(Integer id) {
         productRepository.findById(id).orElseThrow(()
-            -> new RecordNotFoundException("Product not found with id: " + id));
+                -> new RecordNotFoundException("Product not found with id: " + id));
         productRepository.deleteById(id);
-        return RecordDeletedResponse.builder()
-            .message("Product deleted successfully.")
-            .statusCode(HttpStatus.OK.value())
-            .build();
+        uploaderService.deleteImageFolder("p" + id);
     }
 
     public Product updateById(Integer productId, Product product) {
         Product productToUpdate = productRepository.findById(productId).orElseThrow(()
-            -> new RecordNotFoundException("Product not found with id: " + productId));
+                -> new RecordNotFoundException("Product not found with id: " + productId));
         productToUpdate.setProductInfo(product);
 
         return productRepository.save(productToUpdate);
+    }
+
+    public void hideById(Integer productId) {
+        productRepository.updateIsVisibleById(false, productId);
+    }
+
+    public void showById(Integer productId) {
+        productRepository.updateIsVisibleById(true, productId);
     }
 }

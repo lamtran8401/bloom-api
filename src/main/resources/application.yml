@@ -17,3 +17,7 @@ server:
 jwt:
   secret-key: "supersecretjwtkeysupersecretjwtkeysupersecretjwtkeysupersecretjwtkey"
   expiration-time: 900000
+cloudinary:
+  name: dflmm6nmr
+  apiKey: 368562557716915
+  apiSecret: Es2b1xtKNJ0oI61Tv6iB7Qp9I2c
