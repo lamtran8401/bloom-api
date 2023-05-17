@@ -21,23 +21,24 @@ public class UploaderService {
 
     public String uploadImage(MultipartFile file, String folder) throws IOException {
         Map<String, Object> options = Map.of(
-                "folder", "bloom/" + folder,
-                "use_filename", true,
-                "unique_filename", true,
-                "resource_type", "image"
+            "folder", "bloom/" + folder,
+            "use_filename", true,
+            "unique_filename", true,
+            "resource_type", "image"
         );
         return cloudinary.uploader().upload(file.getBytes(), options).get("url").toString();
     }
 
-    public List<String> uploadImages(MultipartFile[] files, String folder) {
+    public List<String> uploadImages(List<MultipartFile> files, String folder) {
         List<String> urls = new ArrayList<>();
-        for (MultipartFile file : files) {
+        files.forEach(file -> {
             try {
                 urls.add(uploadImage(file, folder));
             } catch (IOException e) {
                 logger.error(e.getMessage());
             }
-        }
+        });
+
         return urls;
     }
 

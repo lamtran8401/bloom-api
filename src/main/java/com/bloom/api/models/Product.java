@@ -31,6 +31,7 @@ public class Product extends BaseModel {
     private List<ProductDetail> productDetails;
     @ManyToOne(fetch = FetchType.LAZY)
     private Sale sale;
+    private boolean isDeleted = false;
 
     public void setProductInfo(Product product) {
         this.name = product.getName();

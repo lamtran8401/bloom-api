@@ -14,6 +14,5 @@ public interface ProductRepository extends JpaRepository<Product, Integer> {
     @Query("update Product p set p.isVisible = ?1 where p.id = ?2")
     int updateIsVisibleById(boolean isVisible, Integer id);
 
-    @Query("select p from Product p where p.isVisible = true")
-    List<Product> findByIsVisibleTrue();
+    List<Product> findByIsVisibleAndIsDeleted(boolean isVisible, boolean isDeleted);
 }

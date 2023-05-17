@@ -2,7 +2,11 @@ package com.bloom.api.controllers;
 
 import com.bloom.api.dto.user.UserDTO;
 import com.bloom.api.services.UserService;
+import com.bloom.api.utils.AuthContext;
 import com.bloom.api.utils.dto.request.UpdateInfoRequest;
+import com.bloom.api.utils.dto.request.UpdatePasswordRequest;
+import com.bloom.api.utils.dto.response.ResponseHandler;
+import com.bloom.api.utils.dto.response.ResponseSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -38,5 +42,12 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getMyInfo(Principal principal) {
         return ResponseEntity.ok(userService.getByEmail(principal.getName()));
+    }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<ResponseSender> changePassword(@RequestBody UpdatePasswordRequest req) {
+        Integer currentUserId = AuthContext.getUserId();
+        userService.updatePassword(currentUserId, req.getOldPassword(), req.getNewPassword());
+        return ResponseEntity.ok(ResponseHandler.ok("Password changed successfully."));
     }
 }

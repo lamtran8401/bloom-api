@@ -2,11 +2,12 @@ package com.bloom.api.services;
 
 import com.bloom.api.exception.RecordNotFoundException;
 import com.bloom.api.models.Product;
+import com.bloom.api.models.ProductDetail;
 import com.bloom.api.repositories.ProductRepository;
+import com.bloom.api.utils.dto.request.CreateProductRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,43 +18,41 @@ public class ProductService {
     private final UploaderService uploaderService;
 
     public List<Product> getAll() {
-        return productRepository.findByIsVisibleTrue();
+        return productRepository.findByIsVisibleAndIsDeleted(true, false);
     }
 
     @Transactional
-    public Product create(Product p, MultipartFile[] files) {
-        Product product = productRepository.save(p);
-        List<String> urls = uploaderService.uploadImages(files, "p" + product.getId());
-        product.setImages(urls);
-
-        return product;
+    public Product create(CreateProductRequest req) {
+        Product product = req.getProduct();
+        product.setProductDetails(req.getProductDetails());
+        List<ProductDetail> productDetails = product.getProductDetails();
+        productDetails.forEach(productDetail -> productDetail.setProduct(product));
+        Product newProduct = productRepository.save(product);
+        List<String> urls = uploaderService.uploadImages(req.getFiles(), "p" + newProduct.getId());
+        newProduct.setImages(urls);
+        return newProduct;
     }
 
     public Product getById(Integer id) {
         return productRepository.findById(id).orElseThrow(()
-                -> new RecordNotFoundException("Product not found with id: " + id));
+            -> new RecordNotFoundException("Product not found with id: " + id));
     }
 
     public void deleteById(Integer id) {
-        productRepository.findById(id).orElseThrow(()
-                -> new RecordNotFoundException("Product not found with id: " + id));
-        productRepository.deleteById(id);
-        uploaderService.deleteImageFolder("p" + id);
+        Product product = productRepository.findById(id).orElseThrow(()
+            -> new RecordNotFoundException("Product not found with id: " + id));
+        product.setDeleted(true);
     }
 
     public Product updateById(Integer productId, Product product) {
         Product productToUpdate = productRepository.findById(productId).orElseThrow(()
-                -> new RecordNotFoundException("Product not found with id: " + productId));
+            -> new RecordNotFoundException("Product not found with id: " + productId));
         productToUpdate.setProductInfo(product);
 
         return productRepository.save(productToUpdate);
     }
 
-    public void hideById(Integer productId) {
-        productRepository.updateIsVisibleById(false, productId);
-    }
-
-    public void showById(Integer productId) {
-        productRepository.updateIsVisibleById(true, productId);
+    public void setVisibleById(Integer productId, boolean isVisible) {
+        productRepository.updateIsVisibleById(isVisible, productId);
     }
 }

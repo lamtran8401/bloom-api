@@ -14,7 +14,9 @@ import org.hibernate.annotations.DynamicUpdate;
 @Setter
 @Builder
 public class Address extends BaseModel {
-    private Integer city;
+    private String receiver;
+    private String phone;
+    private Integer province;
     private Integer district;
     private Integer ward;
     private String detail;
@@ -24,7 +26,8 @@ public class Address extends BaseModel {
     private User user;
 
     public void setAddress(Address address) {
-        this.city = address.getCity();
+        this.receiver = address.getReceiver();
+        this.province = address.getProvince();
         this.district = address.getDistrict();
         this.ward = address.getWard();
         this.detail = address.getDetail();

@@ -57,4 +57,13 @@ public class AddressService {
 
         return addressToUpdate;
     }
+
+    public Address getAddressById(Integer addressId, Integer userId) {
+        Address address = addressRepository
+                .findByIdAndUserId(addressId, userId);
+        if (address != null)
+            return address;
+        else
+            throw new RecordNotFoundException("Address not found with id: " + addressId + ".");
+    }
 }

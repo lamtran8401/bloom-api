@@ -4,10 +4,12 @@ import com.bloom.api.dto.MappedDTO;
 import com.bloom.api.dto.user.UserDTO;
 import com.bloom.api.exception.RecordExistedException;
 import com.bloom.api.exception.RecordNotFoundException;
+import com.bloom.api.exception.UnauthorizedException;
 import com.bloom.api.models.User;
 import com.bloom.api.repositories.UserRepository;
 import com.bloom.api.utils.dto.request.UpdateInfoRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+    private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final MappedDTO mappedDTO;
 
@@ -33,25 +36,25 @@ public class UserService {
 
     public UserDTO getById(Integer id) throws RecordNotFoundException {
         return mappedDTO.mapUserDTO(
-                userRepository
-                        .findById(id)
-                        .orElseThrow(() -> new RecordNotFoundException("User not found with id: " + id + "."))
+            userRepository
+                .findById(id)
+                .orElseThrow(() -> new RecordNotFoundException("User not found with id: " + id + "."))
         );
     }
 
     public UserDTO getByEmail(String email) throws RecordNotFoundException {
         return mappedDTO.mapUserDTO(
-                userRepository
-                        .findByEmail(email)
-                        .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + email + "."))
+            userRepository
+                .findByEmail(email)
+                .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + email + "."))
         );
     }
 
     @Transactional
     public UserDTO update(String email, UpdateInfoRequest req) throws RecordNotFoundException {
         var userToUpdate = userRepository
-                .findByEmail(email)
-                .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + email + "."));
+            .findByEmail(email)
+            .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + email + "."));
 
         if (req.getName() != null)
             userToUpdate.setName(req.getName());
@@ -65,5 +68,20 @@ public class UserService {
             userToUpdate.setGender(req.getGender());
 
         return mappedDTO.mapUserDTO(userToUpdate);
+    }
+
+    public void updatePassword(Integer userId, String oldPassword, String newPassword) throws RecordNotFoundException {
+        var userToUpdate = userRepository
+            .findById(userId)
+            .orElseThrow(() -> new RecordNotFoundException("User not found with id: " + userId + "."));
+        if (!verifyOldPassword(userToUpdate, oldPassword))
+            throw new UnauthorizedException("Old password is incorrect.");
+
+        String encodedPassword = passwordEncoder.encode(newPassword);
+        userToUpdate.setPassword(encodedPassword);
+    }
+
+    private boolean verifyOldPassword(User user, String oldPassword) {
+        return passwordEncoder.matches(oldPassword, user.getPassword());
     }
 }

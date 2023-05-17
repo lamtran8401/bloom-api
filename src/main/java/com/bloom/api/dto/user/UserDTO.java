@@ -15,6 +15,7 @@ public record UserDTO(
     LocalDate birthDate,
     String gender,
     String role,
+    boolean isEmailVerified,
     List<Address> addresses
 ) {
 }

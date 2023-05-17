@@ -28,6 +28,11 @@ public class AddressController {
         return ResponseEntity.ok(addressService.addAddress(userId, address));
     }
 
+    @GetMapping("/{addressId}")
+    public ResponseEntity<Address> getAddressById(@PathVariable Integer addressId) {
+        return ResponseEntity.ok(addressService.getAddressById(addressId, AuthContext.getUserId()));
+    }
+
     @PutMapping("/{addressId}")
     public ResponseEntity<Address> updateAddress(@PathVariable Integer addressId, @RequestBody Address address) {
         return ResponseEntity.ok(addressService.updateAddress(addressId, address, AuthContext.getUserId()));

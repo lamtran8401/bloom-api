@@ -2,6 +2,7 @@ package com.bloom.api.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -37,5 +38,17 @@ public class CustomExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMissingServletRequestPartException(MissingServletRequestPartException e) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage() + " Missing image file to create resource.");
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadCredentialsException(BadCredentialsException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST, "Invalid email or password.");
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleBadRequestException(BadRequestException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 }

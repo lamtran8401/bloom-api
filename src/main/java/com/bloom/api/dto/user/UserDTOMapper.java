@@ -22,6 +22,7 @@ public class UserDTOMapper implements Function<User, UserDTO> {
                 .stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst().get(),
+            user.isEmailVerified(),
             user.getAddresses()
         );
     }

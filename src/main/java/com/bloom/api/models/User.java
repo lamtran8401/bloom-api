@@ -39,8 +39,9 @@ public class User extends BaseModel implements UserDetails {
     private Gender gender;
     @Enumerated(EnumType.STRING)
     private Role role;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Address> addresses = new ArrayList<>();
+    public boolean isEmailVerified = false;
 
     @PrePersist
     void preInsert() {
