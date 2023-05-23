@@ -23,62 +23,11 @@ public class JwtService {
     @Value("${jwt.secret-key}")
     private String SECRET_KEY;
     @Value("${jwt.expiration-time}")
-    private int EXPIRATION_TIME;
-
-    public String extractEmail(String token) {
-        return extractClaim(token, Claims::getSubject);
-    }
-
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver)
-        throws ExpiredJwtException, UnsupportedJwtException, SignatureException {
-        final Claims claims = extractAllClaims(token);
-        return claimsResolver.apply(claims);
-    }
-
-    public String generateToken(UserDetails userDetails) {
-        return generateToken(new HashMap<>(), userDetails);
-    }
-
-    public String generateToken(
-        Map<String, Object> extraClaims,
-        UserDetails userDetails) {
-        return Jwts
-            .builder()
-            .setClaims(extraClaims)
-            .setSubject(userDetails.getUsername())
-            .setIssuedAt(new Date(System.currentTimeMillis()))
-            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-            .signWith(getSigningKey(), SignatureAlgorithm.HS256)
-            .compact();
-    }
-
-    public boolean isTokenValid(String token, UserDetails userDetails) {
-        final String email = extractEmail(token);
-        return email.equals(userDetails.getUsername()) && !isTokenExpired(token);
-    }
-
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
-    }
-
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
-    }
-
-    private Claims extractAllClaims(String token)
-        throws ExpiredJwtException, UnsupportedJwtException, SignatureException {
-        return Jwts
-            .parserBuilder()
-            .setSigningKey(getSigningKey())
-            .build()
-            .parseClaimsJws(token)
-            .getBody();
-    }
-
-    private Key getSigningKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(SECRET_KEY);
-        return Keys.hmacShaKeyFor(keyBytes);
-    }
+    private long EXPIRATION_TIME;
+    @Value("${jwt.refresh-key}")
+    private String REFRESH_KEY;
+    @Value("${jwt.refresh-expiration-time}")
+    private long REFRESH_EXPIRATION_TIME;
 
     public String getTokenFromRequest(HttpServletRequest req) {
         final String authorizationHeader = req.getHeader("Authorization");
@@ -89,4 +38,98 @@ public class JwtService {
 
         return authorizationHeader.substring(7);
     }
+
+    private Key getSigningKey(String key) {
+        byte[] keyBytes = Decoders.BASE64.decode(key);
+        return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    private Key getAccessKey() {
+        return getSigningKey(SECRET_KEY);
+    }
+
+    private Key getRefreshKey() {
+        return getSigningKey(REFRESH_KEY);
+    }
+
+    public String generateToken(
+        Key key,
+        long expirationTime,
+        Map<String, Object> extraClaims,
+        UserDetails userDetails) {
+        return Jwts
+            .builder()
+            .setClaims(extraClaims)
+            .setSubject(userDetails.getUsername())
+            .setIssuedAt(new Date(System.currentTimeMillis()))
+            .setExpiration(new Date(System.currentTimeMillis() + expirationTime * 1000))
+            .signWith(key, SignatureAlgorithm.HS256)
+            .compact();
+    }
+
+    public String generateAccessToken(UserDetails userDetails) {
+        return generateToken(getAccessKey(), EXPIRATION_TIME, new HashMap<>(), userDetails);
+    }
+
+    public String generateRefreshToken(UserDetails userDetails) {
+        return generateToken(getRefreshKey(), REFRESH_EXPIRATION_TIME, new HashMap<>(), userDetails);
+    }
+
+    public String extractEmail(String token, Key key) {
+        return extractClaim(token, key, Claims::getSubject);
+    }
+
+    public <T> T extractClaim(String token, Key key, Function<Claims, T> claimsResolver)
+        throws ExpiredJwtException, UnsupportedJwtException, SignatureException {
+        final Claims claims = extractAllClaims(token, key);
+        return claimsResolver.apply(claims);
+    }
+
+    private Claims extractAllClaims(String token, Key key)
+        throws ExpiredJwtException, UnsupportedJwtException, SignatureException {
+        return Jwts
+            .parserBuilder()
+            .setSigningKey(key)
+            .build()
+            .parseClaimsJws(token)
+            .getBody();
+    }
+
+    public String extractEmailFromRefreshToken(String token) {
+        System.out.println();
+        return extractEmail(token, getRefreshKey());
+    }
+
+    public String extractEmailFromAccessToken(String token) {
+        return extractEmail(token, getAccessKey());
+    }
+
+
+    private boolean isAccessTokenExpired(String token) {
+        return isTokenExpired(token, getAccessKey());
+    }
+
+    private boolean isRefreshTokenExpired(String token) {
+        return isTokenExpired(token, getRefreshKey());
+    }
+
+    private boolean isTokenExpired(String token, Key key) {
+        return extractExpiration(token, key).before(new Date());
+    }
+
+    private Date extractExpiration(String token, Key key) {
+        return extractClaim(token, key, Claims::getExpiration);
+    }
+
+    public boolean isAccessTokenValid(String token, UserDetails userDetails) {
+        final String email = extractEmailFromAccessToken(token);
+        return email.equals(userDetails.getUsername()) && !isAccessTokenExpired(token);
+    }
+
+    public boolean isRefreshTokenValid(String token, UserDetails userDetails) {
+        final String email = extractEmailFromRefreshToken(token);
+        return email.equals(userDetails.getUsername()) && !isRefreshTokenExpired(token);
+    }
+
+
 }

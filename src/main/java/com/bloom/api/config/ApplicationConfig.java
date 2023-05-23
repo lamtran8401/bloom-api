@@ -53,6 +53,7 @@ public class ApplicationConfig implements WebMvcConfigurer {
         registry
             .addMapping("/**")
             .allowedOriginPatterns("*")
+            .allowCredentials(true)
             .allowedMethods("*");
     }
 }

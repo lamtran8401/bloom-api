@@ -37,9 +37,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(
-            @NonNull HttpServletRequest req,
-            @NonNull HttpServletResponse res,
-            @NonNull FilterChain filterChain) throws ServletException, IOException {
+        @NonNull HttpServletRequest req,
+        @NonNull HttpServletResponse res,
+        @NonNull FilterChain filterChain) throws ServletException, IOException {
         final String token = jwtService.getTokenFromRequest(req);
 
         if (token == null) {
@@ -49,12 +49,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String email;
         try {
-            email = jwtService.extractEmail(token);
-        } catch (ExpiredJwtException e) {
-            logger.warn(e.getMessage());
-            handleJwtException(res, e.getMessage(), HttpStatus.UNAUTHORIZED);
-            return;
-        } catch (UnsupportedJwtException | SignatureException e) {
+            email = jwtService.extractEmailFromAccessToken(token);
+        } catch (ExpiredJwtException | UnsupportedJwtException | SignatureException e) {
             logger.warn(e.getMessage());
             handleJwtException(res, e.getMessage(), HttpStatus.UNAUTHORIZED);
             return;
@@ -68,9 +64,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 return;
             }
 
-            if (jwtService.isTokenValid(token, userDetails)) {
+            if (jwtService.isAccessTokenValid(token, userDetails)) {
                 UsernamePasswordAuthenticationToken authToken =
-                        new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+                    new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
             }
@@ -93,9 +89,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         res.setContentType("application/json");
         res.setCharacterEncoding("UTF-8");
         res.getWriter().write(new ObjectMapper().writeValueAsString(Map.of(
-                "error", status,
-                "message", message,
-                "statusCode", status.value()
+            "error", status,
+            "message", message,
+            "statusCode", status.value()
         )));
     }
 }

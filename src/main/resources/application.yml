@@ -16,7 +16,9 @@ server:
   port: 8080
 jwt:
   secret-key: "supersecretjwtkeysupersecretjwtkeysupersecretjwtkeysupersecretjwtkey"
-  expiration-time: 900000
+  expiration-time: 500
+  refresh-key: "supersecretrefreshkeysupersecretrefreshkeysupersecretrefresh"
+  refresh-expiration-time: 2592000
 cloudinary:
   name: dflmm6nmr
   apiKey: 368562557716915

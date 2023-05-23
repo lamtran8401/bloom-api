@@ -37,7 +37,9 @@ public class SecurityConfig {
             .requestMatchers(
                 "/api/v1/auth/**",
                 "/api/v1/products",
-                "/api/v1/products/{productId}")
+                "/api/v1/products/{productId}",
+                "/api/v1/auth/refresh"
+            )
             .permitAll()
             .and()
             .authorizeHttpRequests()

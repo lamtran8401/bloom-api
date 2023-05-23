@@ -30,33 +30,53 @@ public class AuthService {
             throw new RecordExistedException("User already existed with email: " + req.getEmail() + ".");
 
         var user = User.builder()
-                .name(req.getName())
-                .email(req.getEmail())
-                .password(passwordEncoder.encode(req.getPassword()))
-                .build();
+            .name(req.getName())
+            .email(req.getEmail())
+            .password(passwordEncoder.encode(req.getPassword()))
+            .build();
         userRepository.save(user);
 
-        var jwtToken = jwtService.generateToken(user);
+        var accessToken = jwtService.generateAccessToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
 
         return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .user(mappedDTO.mapUserDTO(user))
-                .build();
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .user(mappedDTO.mapUserDTO(user))
+            .build();
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest req) {
         authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
+            new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
         );
 
         var user = userRepository.findByEmail(req.getEmail())
-                .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + req.getEmail() + "."));
+            .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + req.getEmail() + "."));
 
-        var jwtToken = jwtService.generateToken(user);
+        var accessToken = jwtService.generateAccessToken(user);
+        var refreshToken = jwtService.generateRefreshToken(user);
 
         return AuthenticationResponse.builder()
-                .token(jwtToken)
-                .user(mappedDTO.mapUserDTO(user))
-                .build();
+            .accessToken(accessToken)
+            .refreshToken(refreshToken)
+            .user(mappedDTO.mapUserDTO(user))
+            .build();
+    }
+
+    public AuthenticationResponse refresh(Integer userId, String refreshToken) {
+        var user = userRepository.findById(userId)
+            .orElseThrow(() -> new RecordNotFoundException("User not found with id: " + userId + "."));
+
+        jwtService.isRefreshTokenValid(refreshToken, user);
+
+        var accessToken = jwtService.generateAccessToken(user);
+        var newRefreshToken = jwtService.generateRefreshToken(user);
+
+        return AuthenticationResponse.builder()
+            .accessToken(accessToken)
+            .refreshToken(newRefreshToken)
+            .user(mappedDTO.mapUserDTO(user))
+            .build();
     }
 }
