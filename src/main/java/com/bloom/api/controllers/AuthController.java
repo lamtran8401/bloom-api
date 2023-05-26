@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final HttpServletRequest request;
 
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(
@@ -58,6 +59,9 @@ public class AuthController {
         HttpServletResponse response,
         @RequestBody RefreshTokenRequest req) {
         Cookie[] cookies = request.getCookies();
+        if (cookies == null || cookies.length == 0)
+            throw new RecordNotFoundException("Refresh token not found in cookie.");
+
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals("refreshToken")) {
                 AuthenticationResponse res = authService.refresh(req.getUserId(), cookie.getValue());
@@ -65,7 +69,7 @@ public class AuthController {
                 return ResponseEntity.ok(res);
             }
         }
-        throw new RecordNotFoundException("Refresh token not found.");
+        throw new RecordNotFoundException("Refresh token not found in cookie.");
     }
 
     private void setCookies(HttpServletResponse response, AuthenticationResponse res) {
@@ -73,6 +77,8 @@ public class AuthController {
             .from("accessToken", res.getAccessToken())
             .httpOnly(true)
             .path("/")
+            .secure(isSecureRequest())
+            .domain(getCookieDomain())
             .maxAge(3 * 60)
             .build();
         response.addHeader("Set-Cookie", accessToken.toString());
@@ -81,6 +87,8 @@ public class AuthController {
             .from("refreshToken", res.getRefreshToken())
             .httpOnly(true)
             .path("/")
+            .secure(isSecureRequest())
+            .domain(getCookieDomain())
             .maxAge(30 * 24 * 60 * 60)
             .build();
         response.addHeader("Set-Cookie", refreshToken.toString());
@@ -99,8 +107,29 @@ public class AuthController {
             .from("refreshToken", "")
             .httpOnly(true)
             .path("/")
+            .secure(isSecureRequest())
+            .domain(getCookieDomain())
             .maxAge(0)
             .build();
         response.addHeader("Set-Cookie", refreshToken.toString());
+    }
+
+    private boolean isSecureRequest() {
+        String origin = request.getHeader("Origin");
+        if (origin == null) {
+            return false;
+        }
+        return origin.startsWith("https");
+    }
+
+    private String getCookieDomain() {
+        String origin = request.getHeader("Origin");
+        if (origin == null) {
+            return "localhost";
+        } else if (origin.contains("localhost")) {
+            return "localhost";
+        } else {
+            return "bloom-beta.vercel.app";
+        }
     }
 }
