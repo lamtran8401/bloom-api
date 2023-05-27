@@ -16,6 +16,7 @@ import java.util.List;
 public class Product extends BaseModel {
     @Column(nullable = false)
     private String name;
+    @Column(length = 1000)
     private String description;
     @ElementCollection
     private List<String> images;

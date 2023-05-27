@@ -26,7 +26,10 @@ public class ProductService {
         Product product = req.getProduct();
         product.setProductDetails(req.getProductDetails());
         List<ProductDetail> productDetails = product.getProductDetails();
-        productDetails.forEach(productDetail -> productDetail.setProduct(product));
+        productDetails.forEach(productDetail -> {
+            if (productDetail.getPrice() == null) productDetail.setPrice(product.getPrice());
+            productDetail.setProduct(product);
+        });
         Product newProduct = productRepository.save(product);
         List<String> urls = uploaderService.uploadImages(req.getFiles(), "p" + newProduct.getId());
         newProduct.setImages(urls);

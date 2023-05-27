@@ -1,5 +1,6 @@
 package com.bloom.api.exception;
 
+import org.apache.tomcat.util.http.fileupload.impl.FileSizeLimitExceededException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -49,6 +50,12 @@ public class CustomExceptionHandler {
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBadRequestException(BadRequestException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(FileSizeLimitExceededException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleFileSizeLimitExceededException(FileSizeLimitExceededException e) {
         return new ErrorResponse(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 }
