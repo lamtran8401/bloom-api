@@ -1,6 +1,7 @@
 package com.bloom.api.controllers;
 
-import com.bloom.api.models.Order;
+import com.bloom.api.dto.MappedDTO;
+import com.bloom.api.dto.order.OrderDTO;
 import com.bloom.api.services.OrderService;
 import com.bloom.api.utils.AuthContext;
 import com.bloom.api.utils.dto.request.OrderRequest;
@@ -17,16 +18,25 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderController {
     private final OrderService orderService;
+    private final MappedDTO mappedDTO;
 
     @GetMapping
-    public List<Order> getAllOrders() {
-        return orderService.getAllOrders(AuthContext.getUserId());
+    public ResponseEntity<List<OrderDTO>> getAllOrders() {
+        return ResponseEntity.ok(
+            mappedDTO.mapOrdersDTO(
+                orderService.getAllOrders(AuthContext.getUserId())
+            )
+        );
     }
 
     @PostMapping
-    public Order createOrder(@RequestBody OrderRequest orderRequest) {
+    public ResponseEntity<OrderDTO> createOrder(@RequestBody OrderRequest orderRequest) {
         Integer userId = AuthContext.getUserId();
-        return orderService.createOrder(orderRequest, userId);
+        return ResponseEntity.ok(
+            mappedDTO.mapOrderDTO(
+                orderService.createOrder(orderRequest, userId)
+            )
+        );
     }
 
     @PutMapping("/{id}/cancel")

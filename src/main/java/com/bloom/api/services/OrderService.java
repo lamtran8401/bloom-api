@@ -62,6 +62,11 @@ public class OrderService {
         });
 
         order.setTotal(calculateTotalPrice(order));
+        if (order.getTotal().compareTo(BigDecimal.valueOf(500000)) < 0)
+            order.setTotal(order.getTotal().add(BigDecimal.valueOf(30000)));
+
+        order.setTotalQuantity(calculateTotalQuantity(order));
+
         orderRepository.save(order);
 
         return order;
@@ -73,6 +78,14 @@ public class OrderService {
             .stream()
             .map(orderItem -> BigDecimal.valueOf(orderItem.getPrice() * orderItem.getQuantity()))
             .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    private int calculateTotalQuantity(Order order) {
+        return order
+            .getOrderItems()
+            .stream()
+            .mapToInt(OrderItem::getQuantity)
+            .sum();
     }
 
     public List<Order> getAllOrders(Integer userId) {

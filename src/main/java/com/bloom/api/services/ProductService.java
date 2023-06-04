@@ -3,6 +3,7 @@ package com.bloom.api.services;
 import com.bloom.api.exception.RecordNotFoundException;
 import com.bloom.api.models.Product;
 import com.bloom.api.models.ProductDetail;
+import com.bloom.api.repositories.ProductDetailRepository;
 import com.bloom.api.repositories.ProductRepository;
 import com.bloom.api.utils.dto.request.CreateProductRequest;
 import lombok.RequiredArgsConstructor;
@@ -16,9 +17,10 @@ import java.util.List;
 public class ProductService {
     private final ProductRepository productRepository;
     private final UploaderService uploaderService;
+    private final ProductDetailRepository productDetailRepository;
 
     public List<Product> getAll() {
-        return productRepository.findByIsVisibleAndIsDeleted(true, false);
+        return productRepository.findAll();
     }
 
     @Transactional
@@ -57,5 +59,9 @@ public class ProductService {
 
     public void setVisibleById(Integer productId, boolean isVisible) {
         productRepository.updateIsVisibleById(isVisible, productId);
+    }
+
+    public void setDeletedByDetailId(List<Integer> detailIds) {
+        detailIds.forEach(detailId -> productDetailRepository.updateIsDeletedById(true, detailId));
     }
 }

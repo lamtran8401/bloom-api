@@ -21,12 +21,12 @@ public class Order extends BaseModel {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems = new ArrayList<>();
     private BigDecimal total;
+    private int totalQuantity;
     @Enumerated(EnumType.STRING)
     private OrderStatus status;
     private String recipientName;
     private String recipientPhone;
     private String recipientAddress;
     @OneToOne
-    @Getter(AccessLevel.NONE)
     private User user;
 }

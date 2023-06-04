@@ -1,13 +1,13 @@
 package com.bloom.api.controllers;
 
+import com.bloom.api.dto.MappedDTO;
+import com.bloom.api.dto.product.ProductDTO;
 import com.bloom.api.models.Product;
 import com.bloom.api.services.ProductService;
 import com.bloom.api.utils.dto.request.CreateProductRequest;
 import com.bloom.api.utils.dto.response.ResponseHandler;
 import com.bloom.api.utils.dto.response.ResponseSender;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,30 +20,36 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    private final Logger logger = LoggerFactory.getLogger(ProductController.class);
+    private final MappedDTO mappedDTO;
 
     @GetMapping
-    public ResponseEntity<List<Product>> getAllProduct() {
-        return ResponseEntity.ok(productService.getAll());
+    public ResponseEntity<List<ProductDTO>> getAllProduct() {
+        return ResponseEntity.ok(
+            mappedDTO.mapProductsDTO(productService.getAll()));
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping(consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<?> createProduct(
+    public ResponseEntity<ProductDTO> createProduct(
         @ModelAttribute CreateProductRequest req) {
-//        return ResponseEntity.ok(productService.create(req));
-        return ResponseEntity.ok(productService.create(req));
+        return ResponseEntity.ok(
+            mappedDTO.mapProductDTO(productService.create(req))
+        );
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{productId}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Integer productId, @RequestBody Product product) {
-        return ResponseEntity.ok(productService.updateById(productId, product));
+    public ResponseEntity<ProductDTO> updateProduct(@PathVariable Integer productId, @RequestBody Product product) {
+        return ResponseEntity.ok(
+            mappedDTO.mapProductDTO(productService.updateById(productId, product))
+        );
     }
 
     @GetMapping("/{productId}")
-    public ResponseEntity<Product> getProductById(@PathVariable Integer productId) {
-        return ResponseEntity.ok(productService.getById(productId));
+    public ResponseEntity<ProductDTO> getProductById(@PathVariable Integer productId) {
+        return ResponseEntity.ok(
+            mappedDTO.mapProductDTO(productService.getById(productId))
+        );
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -68,6 +74,14 @@ public class ProductController {
         productService.setVisibleById(productId, true);
         return ResponseEntity.ok(
             ResponseHandler.ok("Product shown successfully"));
+    }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @PutMapping("/delete")
+    public ResponseEntity<ResponseSender> deleteProducts(@RequestBody List<Integer> detailIds) {
+        productService.setDeletedByDetailId(detailIds);
+        return ResponseEntity.ok(
+            ResponseHandler.ok("Products detail deleted successfully"));
     }
 
 }

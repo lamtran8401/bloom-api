@@ -34,6 +34,11 @@ public class Product extends BaseModel {
     private Sale sale;
     private int soldOut = 0;
     private boolean isDeleted = false;
+    @OneToMany(mappedBy = "product",
+        orphanRemoval = true,
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY)
+    private List<OrderItem> orderItems;
 
     public void setProductInfo(Product product) {
         this.name = product.getName();

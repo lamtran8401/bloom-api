@@ -1,10 +1,9 @@
 package com.bloom.api.dto.user;
 
-import com.bloom.api.models.Address;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
 
 public record UserDTO(
     Integer id,
@@ -16,6 +15,7 @@ public record UserDTO(
     String gender,
     String role,
     boolean isEmailVerified,
-    List<Address> addresses
+    Instant createdAt,
+    Instant updatedAt
 ) {
 }

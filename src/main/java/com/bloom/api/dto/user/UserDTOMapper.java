@@ -23,7 +23,8 @@ public class UserDTOMapper implements Function<User, UserDTO> {
                 .map(GrantedAuthority::getAuthority)
                 .findFirst().get(),
             user.isEmailVerified(),
-            user.getAddresses()
+            user.getCreatedAt(),
+            user.getUpdatedAt()
         );
     }
 }

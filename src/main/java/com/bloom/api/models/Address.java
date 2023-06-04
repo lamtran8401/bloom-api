@@ -21,7 +21,6 @@ public class Address extends BaseModel {
     private Integer ward;
     private String detail;
     private boolean isDefault = false;
-    @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
     private User user;
 

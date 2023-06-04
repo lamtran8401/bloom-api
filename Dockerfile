@@ -10,18 +10,16 @@ COPY settings.gradle .
 
 # Sao chép các tệp Gradle Wrapper vào container
 COPY gradle gradle
-
 COPY gradlew .
 
 # Sao chép mã nguồn của dự án vào container
 COPY src src
 
-
 # Chạy quá trình xây dựng dự án
 RUN ./gradlew build -x test
 
 # Sao chép tệp jar vào container
-RUN cp build/libs/*.jar bloom.jar
+COPY --from=build build/libs/bloom-api.jar .
 
 # Định nghĩa lệnh mặc định để chạy ứng dụng Spring Boot
 CMD ["java", "-jar", "bloom.jar"]

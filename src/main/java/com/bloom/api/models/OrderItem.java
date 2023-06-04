@@ -18,10 +18,10 @@ public class OrderItem extends BaseModel {
     @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
     private Order order;
-    @Getter(AccessLevel.NONE)
+    //    @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
     private Product product;
-    @Getter(AccessLevel.NONE)
+    //    @Getter(AccessLevel.NONE)
     @ManyToOne(fetch = FetchType.LAZY)
     private ProductDetail productDetail;
     private int quantity;

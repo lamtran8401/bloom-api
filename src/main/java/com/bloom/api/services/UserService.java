@@ -1,7 +1,6 @@
 package com.bloom.api.services;
 
 import com.bloom.api.dto.MappedDTO;
-import com.bloom.api.dto.user.UserDTO;
 import com.bloom.api.exception.RecordExistedException;
 import com.bloom.api.exception.RecordNotFoundException;
 import com.bloom.api.exception.UnauthorizedException;
@@ -22,8 +21,8 @@ public class UserService {
     private final UserRepository userRepository;
     private final MappedDTO mappedDTO;
 
-    public List<UserDTO> getAll() {
-        return mappedDTO.mapUsersDTO(userRepository.findAll());
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 
     public void save(User user) {
@@ -34,24 +33,20 @@ public class UserService {
         userRepository.save(user);
     }
 
-    public UserDTO getById(Integer id) throws RecordNotFoundException {
-        return mappedDTO.mapUserDTO(
-            userRepository
-                .findById(id)
-                .orElseThrow(() -> new RecordNotFoundException("User not found with id: " + id + "."))
-        );
+    public User getById(Integer id) throws RecordNotFoundException {
+        return userRepository
+            .findById(id)
+            .orElseThrow(() -> new RecordNotFoundException("User not found with id: " + id + "."));
     }
 
-    public UserDTO getByEmail(String email) throws RecordNotFoundException {
-        return mappedDTO.mapUserDTO(
-            userRepository
-                .findByEmail(email)
-                .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + email + "."))
-        );
+    public User getByEmail(String email) throws RecordNotFoundException {
+        return userRepository
+            .findByEmail(email)
+            .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + email + "."));
     }
 
     @Transactional
-    public UserDTO update(String email, UpdateInfoRequest req) throws RecordNotFoundException {
+    public User update(String email, UpdateInfoRequest req) throws RecordNotFoundException {
         var userToUpdate = userRepository
             .findByEmail(email)
             .orElseThrow(() -> new RecordNotFoundException("User not found with email: " + email + "."));
@@ -67,7 +62,7 @@ public class UserService {
         if (req.getGender() != null)
             userToUpdate.setGender(req.getGender());
 
-        return mappedDTO.mapUserDTO(userToUpdate);
+        return userToUpdate;
     }
 
     public void updatePassword(Integer userId, String oldPassword, String newPassword) throws RecordNotFoundException {
