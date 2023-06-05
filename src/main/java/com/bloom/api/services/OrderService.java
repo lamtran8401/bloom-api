@@ -89,7 +89,23 @@ public class OrderService {
     }
 
     public List<Order> getAllOrders(Integer userId) {
-        return orderRepository.findAllByUserId(userId);
+        return orderRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+    }
+
+    public List<Order> getAll() {
+        return orderRepository.findByOrderByCreatedAtDesc();
+    }
+
+    public List<Order> getAllByStatus(Integer userId, OrderStatus status) {
+        return orderRepository.findAllByUserIdAndStatusOrderByCreatedAtDesc(userId, status);
+    }
+
+    public void updateStatus(Integer id, OrderStatus status) {
+        Order order = orderRepository.findById(id).orElseThrow(
+            () -> new RecordNotFoundException("Order not found with id: " + id)
+        );
+
+        order.setStatus(status);
     }
 
     public void cancelOrder(Integer id, Integer userId) {
