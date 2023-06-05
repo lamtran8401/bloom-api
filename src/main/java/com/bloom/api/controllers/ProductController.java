@@ -78,7 +78,7 @@ public class ProductController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/delete")
-    public ResponseEntity<ResponseSender> deleteProducts(@RequestBody List<Integer> detailIds) {
+    public ResponseEntity<ResponseSender> deleteProductDetails(@RequestBody List<Integer> detailIds) {
         productService.setDeletedByDetailId(detailIds);
         return ResponseEntity.ok(
             ResponseHandler.ok("Products detail deleted successfully"));
